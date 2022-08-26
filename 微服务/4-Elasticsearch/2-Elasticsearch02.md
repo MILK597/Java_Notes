@@ -725,8 +725,6 @@ GET /hotel/_search
 
 
 
-
-
 ### 2.2 深度分页问题
 
 现在，我要查询990~1000的数据，查询逻辑要这么写：
@@ -1035,8 +1033,6 @@ void testMatch() throws IOException {
 
 
 
-
-
 ## 3. 精确查询
 
 精确查询主要是两者：
@@ -1051,8 +1047,6 @@ void testMatch() throws IOException {
 查询条件构造的API如下：
 
 ![image-20210721220305140](assets/image-20210721220305140.png) 
-
-
 
 
 
@@ -1168,7 +1162,6 @@ void testHighlight() throws IOException {
     SearchResponse response = client.search(request, RequestOptions.DEFAULT);
     // 4.解析响应
     handleResponse(response);
-
 }
 ```
 

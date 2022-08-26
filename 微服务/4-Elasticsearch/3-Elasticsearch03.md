@@ -1,7 +1,5 @@
 # ElasticSearch03
 
-
-
 # 一.数据聚合
 
 **[聚合(aggregations)](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html)**可以让我们极其方便的实现对数据的统计、分析、运算。例如：
@@ -161,8 +159,6 @@ GET /hotel/_search
 另外，我们还可以给聚合结果做个排序，例如按照每个桶的酒店平均分排序：
 
 ![image-20210723172917636](assets/image-20210723172917636.png)
-
-
 
 
 
@@ -391,10 +387,6 @@ private void buildBasicQuery(RequestParams params, SearchRequest request) {
 
 
 
-
-
-
-
 # 二.自动补全
 
 当用户在搜索框输入字符时，我们应该提示出与该字符有关的搜索项，如图：
@@ -406,8 +398,6 @@ private void buildBasicQuery(RequestParams params, SearchRequest request) {
 
 
 因为需要根据拼音字母来推断，因此要用到拼音分词功能。
-
-
 
 ## 1. 拼音分词器
 
@@ -706,8 +696,6 @@ GET /test/_search
 
 
 
-
-
 ## 4. 实现酒店搜索框自动补全
 
 现在，我们的hotel索引库还没有设置拼音分词器，需要修改索引库中的配置。但是我们知道**索引库是无法修改的，只能删除然后重新创建**。
@@ -925,8 +913,6 @@ void testBulkRequest() throws IOException {
 
 
 
-
-
 ### 4.4 自动补全查询的JavaAPI
 
 之前我们学习了自动补全查询的DSL，而没有学习对应的JavaAPI，这里给出一个示例：
@@ -1008,8 +994,6 @@ public List<String> getSuggestions(String prefix) {
     }
 }
 ```
-
-
 
 
 
@@ -1696,13 +1680,9 @@ coordinator节点的作用是什么？
 
 
 
-
-
 ## 4. 集群分布式存储
 
 当新增文档时，应该保存到不同分片，保证数据均衡，那么**coordinating node**如何确定数据该存储到哪个分片呢？
-
-
 
 ### 4.1 分片存储测试
 
@@ -1805,6 +1785,3 @@ elasticsearch的查询分成两个阶段：
 node2成为主节点后，会检测集群监控状态，发现：shard-0没有主分片，shard-1没有副本分片。因此需要将node1上的数据迁移到node2、node3：
 
 ![image-20210723230216642](assets/image-20210723230216642.png)
-
-
-

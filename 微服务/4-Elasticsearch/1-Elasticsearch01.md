@@ -668,7 +668,7 @@ IK分词器如何拓展词条？如何停用词条？
 
 - **type**：字段数据类型，常见的简单类型有：
   - 字符串：text（可分词的文本）、keyword（精确值，例如：品牌、国家、ip地址）
-  - 数值：long、integer、short、byte、double、float、
+  - 数值：long、integer、short、byte、double、float
   - 布尔：boolean
   - 日期：date
   - 对象：object
