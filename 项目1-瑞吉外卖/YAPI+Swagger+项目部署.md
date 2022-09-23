@@ -232,11 +232,75 @@ C. 接口功能测试
 
 使用Swagger只需要按照它的规范去定义接口及接口相关的信息，再通过Swagger衍生出来的一系列项目和工具，就可以做到生成各种格式的接口文档，以及在线接口调试页面等等。
 
+#### 依赖
+
+```xml
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger2</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger-ui</artifactId>
+</dependency>
+```
+
+#### 配置类
+
+```java
+@Configuration
+@EnableSwagger2
+public class SwaggerConfiguration {
+
+   @Bean
+   public Docket buildDocket() {
+      return new Docket(DocumentationType.SWAGGER_2)
+              .apiInfo(buildApiInfo())
+              .select()
+              // 要扫描的API(Controller)基础包
+              .apis(RequestHandlerSelectors.basePackage("com.heima"))
+              .paths(PathSelectors.any())
+              .build();
+   }
+
+   private ApiInfo buildApiInfo() {
+      Contact contact = new Contact("黑马程序员","","");
+      return new ApiInfoBuilder()
+              .title("黑马头条-平台管理API文档")
+              .description("黑马头条后台api")
+              .contact(contact)
+              .version("1.0.0").build();
+   }
+}
+```
+
+#### Swagger常用注解
+
+**@Api**：修饰整个类，描述Controller的作用  
+
+**@ApiOperation**：描述一个类的一个方法，或者说一个接口  
+
+**@ApiParam**：单个参数的描述信息  
+
+**@ApiModel**：用对象来接收参数  
+
+**@ApiModelProperty**：用对象接收参数时，描述对象的一个字段  
+
+**@ApiResponse**：HTTP响应其中1个描述  
+
+**@ApiResponses**：HTTP响应整体描述  
+
+**@ApiIgnore**：使用该注解忽略这个API  
+
+**@ApiError** ：发生错误返回的信息  
+
+**@ApiImplicitParam**：一个请求参数  
+
+**@ApiImplicitParams**：多个请求参数的描述信息
 
 
-直接使用Swagger, 需要按照Swagger的规范定义接口, 实际上就是编写Json文件，编写起来比较繁琐、并不方便, 。而在项目中使用，我们一般会选择一些现成的框架来简化文档的编写，而这些框架是基于Swagger的，如**knife4j**。
 
-#### knife4j
+### 2. knife4j
 
 **knife4j**是为Java MVC框架集成Swagger生成Api文档的增强解决方案。而我们要使用kinfe4j，需要在pom.xml中引入如下依赖即可： 
 
@@ -250,70 +314,17 @@ C. 接口功能测试
 
 
 
-
-
-### 2. 使用方式
-
-接下来，我们就将我们的项目集成Knife4j，来自动生成接口文档。这里我们还是需要再创建一个新的分支v1.2，在该分支中进行knife4j的集成，集成测试完毕之后，没有问题，我们再将v1.2分支合并到master。
-
-使用knife4j，主要需要操作以下几步:
-
-**1). 导入knife4j的maven坐标**
-
-```xml
-<dependency>
-    <groupId>com.github.xiaoymin</groupId>
-    <artifactId>knife4j-spring-boot-starter</artifactId>
-    <version>3.0.2</version>
-</dependency>
-```
-
-
-
 #### knife4j配置类
-
-**2). 导入knife4j相关配置类**
-
-这里我们就不需要再创建一个新的配置类了，我们直接在WebMvcConfig配置类中声明即可。
 
 A. 在该配置类中加上两个注解 **@EnableSwagger2 @EnableKnife4j** ,开启Swagger和Knife4j的功能。
 
 B. 在配置类中声明一个**Docket类型**的bean, 通过该bean来指定生成文档的信息。
 
 ```java
-@Slf4j
 @Configuration
 @EnableSwagger2		//添加这两个注解
 @EnableKnife4j
 public class WebMvcConfig extends WebMvcConfigurationSupport {
-	
-    /**
-     * 设置静态资源映射
-     * @param registry
-     */
-    @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        log.info("开始进行静态资源映射...");
-        registry.addResourceHandler("/backend/**").addResourceLocations("classpath:/backend/");
-        registry.addResourceHandler("/front/**").addResourceLocations("classpath:/front/");
-    }
-	
-    /**
-     * 扩展mvc框架的消息转换器
-     * @param converters
-     */
-    @Override
-    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        log.info("扩展消息转换器...");
-        //创建消息转换器对象
-        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
-        //设置对象转换器，底层使用Jackson将Java对象转为json
-        messageConverter.setObjectMapper(new JacksonObjectMapper());
-        //将上面的消息转换器对象追加到mvc框架的转换器集合中
-        converters.add(0,messageConverter);
-    }
-	
-    //下面这两个是使用 knife4j和swagger新加的：
     @Bean
     public Docket createRestApi() {
         // 文档类型
@@ -339,7 +350,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 
 
-**3). 设置静态资源映射**
+#### **设置静态资源映射**
 
 由于Swagger生成的在线文档中，涉及到很多静态资源，这些静态资源需要添加静态资源映射，否则接口文档页面无法访问。因此需要在 WebMvcConfig类中的**addResourceHandlers方法**中增加如下配置。
 
@@ -347,25 +358,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
 registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 ```
-
-
-
-**4). 在LoginCheckFilter中设置不需要处理的请求路径**
-
-需要将Swagger及Knife4j相关的静态资源直接放行，无需登录即可访问，否则我们就需要登录之后，才可以访问接口文档的页面。
-
-在原有的不需要处理的请求路径中，再增加如下链接： 
-
-```java
-"/doc.html",
-"/webjars/**",
-"/swagger-resources",
-"/v2/api-docs"
-```
-
-![image-20210901171132242](img/image-20210901171132242.png) 
-
-
 
 
 
@@ -413,8 +405,6 @@ registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META
 | **@ApiOperation**      | 方法             | 说明方法的用途、作用                                         |
 | **@ApiImplicitParams** | 方法             | 表示一组参数说明                                             |
 | **@ApiImplicitParam**  | 方法             | 用在@ApiImplicitParams注解中，指定一个请求参数的各个方面的属性 |
-
-
 
 
 

@@ -343,7 +343,7 @@ spring:
   rabbitmq:
     listener:
       simple:
-        acknowledge-mode: auto # 关闭ack
+        acknowledge-mode: auto # 自动ack
 ```
 
 在异常位置打断点，再次发送消息，程序卡在断点时，可以发现此时消息状态为`unacked`（未确定状态）：
