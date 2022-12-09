@@ -10,7 +10,7 @@ MongoDB是一个介于关系数据库和非关系数据库之间的产品，是�
 
 ## 2. 通过docker安装MongoDB
 
-```
+```bash
 docker pull mongo
 docker run --name mongo-service -p 27017:27017 -v ~/data/mongodata:/data -d  mongo
 ```
